@@ -1,91 +1,64 @@
-import { Component } from 'react';
-import AddTask from './AddTask';
-import TaskList from './TaskList';
-import Task from './Task';
-import './App.css';
+import { useEffect, useState } from "react";
+import AddTask from "./AddTask";
+import TaskList from "./TaskList";
+import "./App.css";
+import React from "react";
 
-class App extends Component {
-  counter = 3;
-  state = {
-    tasks: [
-      {
-        id: 0,
-        text: 'Przeczytać książkę o GitHubie',
-        date: '2023-10-14',
-        important: true,
-        active: true,
-        finishDate: null
-      },
-      {
-        id: 1,
-        text: 'Nauka Reacta',
-        date: '2023-10-12',
-        important: true,
-        active: true,
-        finishDate: null
-      },
-      {
-        id: 2,
-        text: 'Pójść do fryziera',
-        date: '2023-10-13',
-        important: false,
-        active: true,
-        finishDate: null
-      },
-    ]
-  }
+const App = () => {
+  const [counter, setCounter] = useState(3);
+  const [allTasks, setAllTasks] = useState(JSON.parse(localStorage.getItem('allTasks')) || []);
 
-  deleteTask = (id) => {
-    const tasks = [...this.state.tasks];
-    const index = tasks.findIndex(task => task.id === id);
+  useEffect(() => {
+    localStorage.setItem('allTasks', JSON.stringify(allTasks));
+  }, [allTasks]);
+
+  const deleteTask = (id) => {
+    const tasks = [...allTasks];
+    const index = tasks.findIndex((task) => task.id === id);
     tasks.splice(index, 1);
 
-    this.setState({
-      tasks
-    })
-  }
+    setAllTasks(tasks);
+  };
 
-  changeTaskStatus = (id) => {
-    const tasks = [...this.state.tasks];
-    tasks.forEach(task => {
+  const changeTaskStatus = (id) => {
+    const tasks = [...allTasks];
+    tasks.forEach((task) => {
       if (task.id === id) {
-        task.active = false;
+        task.active = !task.active;
         task.finishDate = new Date().getTime();
       }
-    })
-    this.setState({
-      tasks
-    })
-  }
+    });
+    setAllTasks(tasks);
+  };
 
-  addTask = (text, date, important) => {
-    const tasks = [...this.state.tasks];
+  const addTask = (text, date, important) => {
+    const tasks = [...allTasks];
     const task = {
-      id: this.counter,
+      id: counter,
       text,
       date,
       important,
       active: true,
-      finishDate: null
-    }
+      finishDate: null,
+    };
     tasks.push(task);
-    this.counter++
-    this.setState({
-      tasks
-    })
+    setCounter(counter + 1);
+    setAllTasks(tasks);
 
-    return true
-  }
+    return true;
+  };
 
-  render() {
-    return (
-      <div className="App">
-        <h1>TODO APP</h1>
-        <AddTask add={this.addTask} />
-        <TaskList tasks={this.state.tasks} delete={this.deleteTask} change={this.changeTaskStatus} />
-      </div>
-    );
-  }
-}
+  return (
+    <div className="App">
+      <h1>TODO APP</h1>
+      <AddTask add={addTask} />
+      <TaskList
+        tasks={allTasks}
+        delete={deleteTask}
+        change={changeTaskStatus}
+      />
+    </div>
+  );
+};
 
 export default App;

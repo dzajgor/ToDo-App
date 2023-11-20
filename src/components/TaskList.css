@@ -1,0 +1,15 @@
+.tasks-list{
+    display: flex;
+}
+
+.active{
+    width: 500px;
+    margin: auto;
+    border: black solid 2px;
+}
+
+.done{
+    width: 500px;
+    margin: auto;
+    border: black solid 2px;
+}
