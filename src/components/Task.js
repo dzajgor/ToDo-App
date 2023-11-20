@@ -1,4 +1,5 @@
 import React from "react";
+import { useDrag } from "react-dnd";
 
 const Task = (props) => {
   const style = {
@@ -7,14 +8,18 @@ const Task = (props) => {
 
   const { text, date, id, active, important, finishDate } = props.task;
 
+  const [, drag] = useDrag({
+    type: "TASK",
+    item: { id },
+  });
+
   if (active) {
     return (
-      <tr className="table-tr">
+      <tr className="table-tr" ref={drag}>
         <td>
           <p>
             <strong style={important ? style : null}>{text}</strong> - do{" "}
             <span>{date} </span>
-            <button onClick={() => props.change(id)}>Zostało zrobione</button>
             <button onClick={() => props.delete(id)}>X</button>
           </p>
         </td>
@@ -23,14 +28,13 @@ const Task = (props) => {
   } else {
     const finish = new Date(finishDate).toLocaleString();
     return (
-      <tr className="table-tr">
+      <tr className="table-tr" ref={drag}>
         <td>
           <p>
             <strong>{text}</strong>
             <em> (zrobić do {date}) </em>
             <br />- potwierdzenie wykonania
             <span>{finish}</span>
-            <button onClick={() => props.change(id)}>cofnij</button>
             <button onClick={() => props.delete(id)}>X</button>
           </p>
         </td>
